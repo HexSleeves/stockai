@@ -1,4 +1,4 @@
-.PHONY: dev build test docker clean install gen-key install-dependencies prettier prettier-check
+.PHONY: dev build test docker clean install gen-key install-dependencies prettier prettier-check restart logs logs-recent help
 
 # Development
 dev:
@@ -44,6 +44,20 @@ format-check:
 gen-key:
 	@openssl rand -base64 32
 
+# Service management
+restart:
+	@echo "Rebuilding and restarting service..."
+	@make build
+	@sudo systemctl restart stockmarket
+	@sleep 2
+	@sudo systemctl status stockmarket --no-pager | head -15
+
+logs:
+	@sudo journalctl -u stockmarket -f
+
+logs-recent:
+	@sudo journalctl -u stockmarket -n 50 --no-pager
+
 help:
 	@echo "Usage: make <target>"
 	@echo "Targets:"
@@ -59,4 +73,7 @@ help:
 	@echo "  prettier - Format frontend static assets"
 	@echo "  prettier-check - Check frontend formatting"
 	@echo "  gen-key - Generate the encryption key"
+	@echo "  restart - Rebuild, restart service, and show status"
+	@echo "  logs - Follow service logs (real-time)"
+	@echo "  logs-recent - Show last 50 log lines"
 	@echo "  help - Show this help message"

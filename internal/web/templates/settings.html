@@ -31,12 +31,22 @@
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">API Key</label>
-                    <input type="password" name="market_data_api_key"
-                           class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
-                                  text-content-primary placeholder:text-content-muted
-                                  focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
-                                  transition-all duration-200"
-                           placeholder="Leave empty to keep existing key">
+                    <div class="relative">
+                        <input type="password" name="market_data_api_key"
+                               class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
+                                      text-content-primary placeholder:text-content-muted
+                                      focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+                                      transition-all duration-200"
+                               placeholder="Leave empty to keep existing key">
+                        {{if .Config.HasMarketAPIKey}}
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-xs text-positive">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Configured</span>
+                        </div>
+                        {{end}}
+                    </div>
                     <p class="text-xs text-content-muted">Leave empty to keep existing key</p>
                 </div>
                 <button type="submit"
@@ -89,12 +99,23 @@
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">API Key</label>
-                    <input type="password" name="ai_provider_api_key"
-                           class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
-                                  text-content-primary placeholder:text-content-muted
-                                  focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
-                                  transition-all duration-200"
-                           placeholder="Leave empty to keep existing key">
+                    <div class="relative">
+                        <input type="password" name="ai_provider_api_key"
+                               class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
+                                      text-content-primary placeholder:text-content-muted
+                                      focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+                                      transition-all duration-200"
+                               placeholder="Leave empty to keep existing key">
+                        {{if .Config.HasAIAPIKey}}
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-xs text-positive">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Configured</span>
+                        </div>
+                        {{end}}
+                    </div>
+                    <p class="text-xs text-content-muted">Leave empty to keep existing key</p>
                 </div>
                 <button type="submit"
                         class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
@@ -163,32 +184,41 @@
     </div>
 
     <!-- Watchlist -->
+    {{template "watchlist-settings" .}}
+
+    <!-- Polling Configuration -->
     <div class="bg-bg-elevated rounded-xl border border-border p-6">
         <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-warning-bg rounded-lg">
-                <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <div class="p-2 bg-info-bg rounded-lg">
+                <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
             </div>
-            <h2 class="text-lg font-semibold text-content-primary">Watchlist</h2>
+            <h2 class="text-lg font-semibold text-content-primary">Polling Configuration</h2>
         </div>
-        <form hx-post="/api/config/watchlist" hx-swap="none" hx-indicator="#watchlist-spinner">
+        <form hx-post="/api/config/polling" hx-swap="none" hx-indicator="#polling-spinner">
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-content-primary">Tracked Symbols</label>
-                    <input type="text" name="tracked_symbols" value="{{range $i, $s := .Config.TrackedSymbols}}{{if $i}}, {{end}}{{$s}}{{end}}"
-                           class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
-                                  text-content-primary placeholder:text-content-muted font-mono text-sm
-                                  focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
-                                  transition-all duration-200"
-                           placeholder="AAPL, GOOGL, MSFT, ...">
-                    <p class="text-xs text-content-muted">Comma-separated stock symbols</p>
+                    <label class="block text-sm font-medium text-content-primary">Data Refresh Interval</label>
+                    <select name="polling_interval"
+                            class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
+                                   text-content-primary
+                                   focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+                                   transition-all duration-200">
+                        <option value="30" {{if eq .Config.PollingInterval 30}}selected{{end}}>30 seconds</option>
+                        <option value="60" {{if eq .Config.PollingInterval 60}}selected{{end}}>1 minute</option>
+                        <option value="300" {{if eq .Config.PollingInterval 300}}selected{{end}}>5 minutes</option>
+                        <option value="900" {{if eq .Config.PollingInterval 900}}selected{{end}}>15 minutes</option>
+                        <option value="1800" {{if eq .Config.PollingInterval 1800}}selected{{end}}>30 minutes</option>
+                        <option value="3600" {{if eq .Config.PollingInterval 3600}}selected{{end}}>1 hour</option>
+                    </select>
+                    <p class="text-xs text-content-muted">How often to fetch fresh market data</p>
                 </div>
                 <button type="submit"
                         class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                                rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
-                    Save Watchlist
-                    <div id="watchlist-spinner" class="htmx-indicator">
+                    Save Polling Settings
+                    <div id="polling-spinner" class="htmx-indicator">
                         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
