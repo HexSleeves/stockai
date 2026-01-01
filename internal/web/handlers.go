@@ -14,6 +14,12 @@ import (
 	"github.com/scmhub/calendar"
 )
 
+// Package-level cached calendar (immutable, safe to share)
+var nyseCalendar = calendar.XNYS()
+
+// EST timezone for market hours
+var estLocation = time.FixedZone("EST", -5*60*60)
+
 // TemplHandlers uses templ components for rendering
 type TemplHandlers struct {
 	db *db.DB
@@ -318,7 +324,5 @@ func formatVolume(vol int64) string {
 }
 
 func isMarketOpen() bool {
-	nyse := calendar.XNYS()
-	now := time.Now().In(time.FixedZone("EST", -5*60*60))
-	return nyse.IsOpen(now)
+	return nyseCalendar.IsOpen(time.Now().In(estLocation))
 }
