@@ -19,24 +19,24 @@
                 </td>
                 <td class="px-4 py-4">
                     {{if eq .Recommendation.Action "BUY"}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-positive-bg text-positive border border-positive/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-positive"></span>
                         BUY
                     </span>
                     {{else if eq .Recommendation.Action "SELL"}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-negative-bg text-negative border border-negative/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-negative"></span>
                         SELL
                     </span>
                     {{else if eq .Recommendation.Action "HOLD"}}
-                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-bg-tertiary text-content-secondary border border-border">
                         HOLD
                     </span>
                     {{else}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-warning-bg text-warning border border-warning/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
                         WATCH
@@ -53,8 +53,8 @@
                     <span class="text-sm text-content-muted">{{.CreatedAt.Format "Jan 02, 15:04"}}</span>
                 </td>
                 <td class="px-4 py-4 text-right">
-                    <button hx-get="/partials/analysis-detail/{{.ID}}" 
-                            hx-target="#analysis-result" 
+                    <button hx-get="/partials/analysis-detail/{{.ID}}"
+                            hx-target="#analysis-result"
                             hx-swap="innerHTML"
                             class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">
                         View
@@ -74,8 +74,8 @@
     </div>
     <p class="text-lg font-medium text-content-secondary">No analysis history yet</p>
     <p class="text-sm text-content-muted mt-1">Run your first stock analysis to get started</p>
-    <a href="/analysis" 
-       class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+    <a href="/analysis"
+       class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
               rounded-lg transition-all duration-200">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

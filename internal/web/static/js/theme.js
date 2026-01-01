@@ -1,5 +1,5 @@
 // Theme Management with System Preference Detection
-(function() {
+(function () {
   'use strict';
 
   const STORAGE_KEY = 'theme';
@@ -35,7 +35,7 @@
   });
 
   // Expose toggle function globally
-  window.toggleTheme = function() {
+  window.toggleTheme = function () {
     const isDark = document.documentElement.classList.contains(DARK_CLASS);
     const newTheme = isDark ? 'light' : 'dark';
     localStorage.setItem(STORAGE_KEY, newTheme);
@@ -43,7 +43,7 @@
   };
 
   // Expose function to get current theme
-  window.getCurrentTheme = function() {
+  window.getCurrentTheme = function () {
     return document.documentElement.classList.contains(DARK_CLASS) ? 'dark' : 'light';
   };
 })();

@@ -1,30 +1,30 @@
 {{if .Recommendations}}
 <div class="space-y-3">
     {{range .Recommendations}}
-    <article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl 
+    <article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl
                     border border-transparent hover:border-accent/30 hover:bg-bg-tertiary
                     transition-all duration-200">
         <div class="flex items-center gap-3">
             <!-- Recommendation Badge -->
             {{if eq .Action "BUY"}}
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold
                          rounded-full bg-positive-bg text-positive border border-positive/20">
                 <span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse-subtle"></span>
                 BUY
             </span>
             {{else if eq .Action "SELL"}}
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold
                          rounded-full bg-negative-bg text-negative border border-negative/20">
                 <span class="w-1.5 h-1.5 rounded-full bg-negative animate-pulse-subtle"></span>
                 SELL
             </span>
             {{else if eq .Action "HOLD"}}
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold
                          rounded-full bg-bg-tertiary text-content-secondary border border-border">
                 HOLD
             </span>
             {{else}}
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold
                          rounded-full bg-warning-bg text-warning border border-warning/20">
                 <span class="w-1.5 h-1.5 rounded-full bg-warning animate-pulse-subtle"></span>
                 WATCH
@@ -37,7 +37,7 @@
                 <p class="text-xs text-content-muted uppercase tracking-wider">Confidence</p>
                 <p class="font-semibold font-mono text-accent">{{printf "%.0f" (mul .Confidence 100)}}%</p>
             </div>
-            <a href="/analysis/{{.Symbol}}" 
+            <a href="/analysis/{{.Symbol}}"
                class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">
                 View
             </a>
@@ -54,7 +54,7 @@
     </div>
     <p class="text-content-secondary font-medium">No recommendations yet</p>
     <p class="text-sm text-content-muted mt-1">Run an analysis to get AI-powered insights</p>
-    <a href="/analysis" 
+    <a href="/analysis"
        class="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

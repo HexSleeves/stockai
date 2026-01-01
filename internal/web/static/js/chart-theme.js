@@ -3,34 +3,34 @@
 
 const getChartTheme = () => {
   const isDark = document.documentElement.classList.contains('dark');
-  
+
   return {
     colors: {
-      line: '#6366F1',           // accent-primary - main line color
+      line: '#6366F1', // accent-primary - main line color
       lineFill: 'rgba(99, 102, 241, 0.1)', // accent with transparency
-      positive: '#10B981',       // gains, buy signals
-      negative: '#EF4444',       // losses, sell signals
-      warning: '#F59E0B',        // alerts, caution
-      info: '#3B82F6',           // informational
+      positive: '#10B981', // gains, buy signals
+      negative: '#EF4444', // losses, sell signals
+      warning: '#F59E0B', // alerts, caution
+      info: '#3B82F6', // informational
       grid: isDark ? '#334155' : '#E2E8F0',
       text: isDark ? '#64748B' : '#94A3B8',
       textPrimary: isDark ? '#F8FAFC' : '#0F172A',
       background: isDark ? '#1E293B' : '#FFFFFF',
       tooltip: isDark ? '#1F2937' : '#FFFFFF',
     },
-    
+
     // Common chart props for consistent styling
     chartProps: {
       margin: { top: 10, right: 30, left: 0, bottom: 0 },
     },
-    
+
     // XAxis default styling
     xAxisProps: {
       axisLine: false,
       tickLine: false,
       tick: { fill: isDark ? '#64748B' : '#94A3B8', fontSize: 12 },
     },
-    
+
     // YAxis default styling
     yAxisProps: {
       axisLine: false,
@@ -38,14 +38,14 @@ const getChartTheme = () => {
       tick: { fill: isDark ? '#64748B' : '#94A3B8', fontSize: 12 },
       width: 60,
     },
-    
+
     // CartesianGrid styling
     gridProps: {
       strokeDasharray: '3 3',
       stroke: isDark ? '#334155' : '#E2E8F0',
       vertical: false,
     },
-    
+
     // Tooltip styling
     tooltipProps: {
       contentStyle: {
@@ -68,7 +68,7 @@ const getChartTheme = () => {
 // Lightweight Charts configuration
 const getLightweightChartsTheme = () => {
   const isDark = document.documentElement.classList.contains('dark');
-  
+
   return {
     layout: {
       background: { type: 'solid', color: isDark ? '#1E293B' : '#FFFFFF' },

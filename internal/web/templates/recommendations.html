@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="space-y-2">
                 <label class="block text-sm font-medium text-content-primary">Action</label>
-                <select name="action" 
+                <select name="action"
                         class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                text-content-primary
                                focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -25,7 +25,7 @@
             </div>
             <div class="space-y-2">
                 <label class="block text-sm font-medium text-content-primary">Min Confidence</label>
-                <select name="min_confidence" 
+                <select name="min_confidence"
                         class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                text-content-primary
                                focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -39,7 +39,7 @@
             </div>
             <div class="space-y-2">
                 <label class="block text-sm font-medium text-content-primary">Symbol</label>
-                <input type="text" name="symbol" 
+                <input type="text" name="symbol"
                        class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                               text-content-primary placeholder:text-content-muted
                               focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -47,9 +47,9 @@
                        placeholder="e.g., AAPL">
             </div>
             <div class="flex items-end">
-                <button type="submit" 
-                        class="w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 
-                               bg-accent hover:bg-accent-hover text-white font-medium rounded-lg 
+                <button type="submit"
+                        class="w-full inline-flex items-center justify-center gap-2 px-6 py-2.5
+                               bg-accent hover:bg-accent-hover text-white font-medium rounded-lg
                                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                     <span>Apply Filters</span>
                     <div id="filter-spinner" class="htmx-indicator">
@@ -68,8 +68,8 @@
 <div class="bg-bg-elevated rounded-xl border border-border overflow-hidden">
     <div class="flex items-center justify-between p-6 border-b border-border">
         <h2 class="text-lg font-semibold text-content-primary">All Recommendations</h2>
-        <button onclick="exportRecommendations()" 
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-content-secondary 
+        <button onclick="exportRecommendations()"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-content-secondary
                        hover:text-content-primary hover:bg-bg-tertiary rounded-lg transition-all duration-200">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

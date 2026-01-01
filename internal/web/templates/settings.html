@@ -19,7 +19,7 @@
             <div class="space-y-4">
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">Provider</label>
-                    <select name="market_data_provider" 
+                    <select name="market_data_provider"
                             class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                    text-content-primary
                                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -31,7 +31,7 @@
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">API Key</label>
-                    <input type="password" name="market_data_api_key" 
+                    <input type="password" name="market_data_api_key"
                            class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                   text-content-primary placeholder:text-content-muted
                                   focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -39,8 +39,8 @@
                            placeholder="Leave empty to keep existing key">
                     <p class="text-xs text-content-muted">Leave empty to keep existing key</p>
                 </div>
-                <button type="submit" 
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                                rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                     Save Market Settings
                     <div id="market-spinner" class="htmx-indicator">
@@ -68,7 +68,7 @@
             <div class="space-y-4">
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">Provider</label>
-                    <select name="ai_provider" 
+                    <select name="ai_provider"
                             class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                    text-content-primary
                                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -89,15 +89,15 @@
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">API Key</label>
-                    <input type="password" name="ai_provider_api_key" 
+                    <input type="password" name="ai_provider_api_key"
                            class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                   text-content-primary placeholder:text-content-muted
                                   focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
                                   transition-all duration-200"
                            placeholder="Leave empty to keep existing key">
                 </div>
-                <button type="submit" 
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                                rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                     Save AI Settings
                     <div id="ai-spinner" class="htmx-indicator">
@@ -125,7 +125,7 @@
             <div class="space-y-4">
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">Risk Tolerance</label>
-                    <select name="risk_tolerance" 
+                    <select name="risk_tolerance"
                             class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                    text-content-primary
                                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -137,7 +137,7 @@
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-content-primary">Trade Frequency</label>
-                    <select name="trade_frequency" 
+                    <select name="trade_frequency"
                             class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg
                                    text-content-primary
                                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
@@ -147,8 +147,8 @@
                         <option value="swing" {{if eq .Config.TradeFrequency "swing"}}selected{{end}}>Swing Trading (2-6 weeks)</option>
                     </select>
                 </div>
-                <button type="submit" 
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                                rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                     Save Strategy
                     <div id="strategy-spinner" class="htmx-indicator">
@@ -184,8 +184,8 @@
                            placeholder="AAPL, GOOGL, MSFT, ...">
                     <p class="text-xs text-content-muted">Comma-separated stock symbols</p>
                 </div>
-                <button type="submit" 
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                                rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                     Save Watchlist
                     <div id="watchlist-spinner" class="htmx-indicator">
@@ -229,7 +229,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <!-- Discord -->
             <div class="space-y-4">
                 <h3 class="text-sm font-semibold text-content-primary uppercase tracking-wider">Discord</h3>
@@ -247,7 +247,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <!-- SMS -->
             <div class="space-y-4">
                 <h3 class="text-sm font-semibold text-content-primary uppercase tracking-wider">SMS (Twilio)</h3>
@@ -267,8 +267,8 @@
             </div>
         </div>
         <div class="mt-6 pt-6 border-t border-border">
-            <button type="submit" 
-                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium 
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium
                            rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50">
                 Save Notification Settings
                 <div id="notif-spinner" class="htmx-indicator">

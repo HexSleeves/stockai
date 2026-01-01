@@ -16,24 +16,24 @@
             </div>
             <!-- Recommendation Badge -->
             {{if eq .Recommendation.Action "BUY"}}
-            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold 
+            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold
                          rounded-lg bg-positive-bg text-positive border border-positive/20">
                 <span class="w-2 h-2 rounded-full bg-positive animate-pulse-subtle"></span>
                 BUY
             </span>
             {{else if eq .Recommendation.Action "SELL"}}
-            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold 
+            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold
                          rounded-lg bg-negative-bg text-negative border border-negative/20">
                 <span class="w-2 h-2 rounded-full bg-negative animate-pulse-subtle"></span>
                 SELL
             </span>
             {{else if eq .Recommendation.Action "HOLD"}}
-            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold 
+            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold
                          rounded-lg bg-bg-tertiary text-content-secondary border border-border">
                 HOLD
             </span>
             {{else}}
-            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold 
+            <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold
                          rounded-lg bg-warning-bg text-warning border border-warning/20">
                 <span class="w-2 h-2 rounded-full bg-warning animate-pulse-subtle"></span>
                 WATCH

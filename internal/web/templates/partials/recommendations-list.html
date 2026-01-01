@@ -20,24 +20,24 @@
                 </td>
                 <td class="px-4 py-4">
                     {{if eq .Action "BUY"}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-positive-bg text-positive border border-positive/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-positive"></span>
                         BUY
                     </span>
                     {{else if eq .Action "SELL"}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-negative-bg text-negative border border-negative/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-negative"></span>
                         SELL
                     </span>
                     {{else if eq .Action "HOLD"}}
-                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-bg-tertiary text-content-secondary border border-border">
                         HOLD
                     </span>
                     {{else}}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                                  rounded-full bg-warning-bg text-warning border border-warning/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
                         WATCH
@@ -61,7 +61,7 @@
                     <span class="text-sm text-content-muted">{{.AIProvider}}</span>
                 </td>
                 <td class="px-4 py-4 text-right">
-                    <a href="/analysis/{{.Symbol}}" 
+                    <a href="/analysis/{{.Symbol}}"
                        class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">
                         Details
                     </a>

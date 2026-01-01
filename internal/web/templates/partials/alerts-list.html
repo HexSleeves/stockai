@@ -1,7 +1,7 @@
 {{if .Alerts}}
 <div class="space-y-3">
     {{range .Alerts}}
-    <article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl 
+    <article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl
                     border border-border hover:border-accent/30 transition-all duration-200">
         <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-lg flex items-center justify-center
@@ -19,14 +19,14 @@
             <div>
                 <h3 class="font-semibold text-content-primary">{{.Symbol}}</h3>
                 <p class="text-sm text-content-muted">
-                    Price {{.Condition}} 
+                    Price {{.Condition}}
                     <span class="font-mono font-medium text-content-secondary">${{printf "%.2f" .TargetPrice}}</span>
                 </p>
             </div>
         </div>
         <div class="flex items-center gap-4">
             {{if .Triggered}}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                          rounded-full bg-positive-bg text-positive border border-positive/20">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -34,17 +34,17 @@
                 Triggered
             </span>
             {{else}}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold 
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold
                          rounded-full bg-bg-tertiary text-content-secondary border border-border">
                 <span class="w-1.5 h-1.5 rounded-full bg-content-muted animate-pulse-subtle"></span>
                 Active
             </span>
             {{end}}
-            <button hx-delete="/api/alerts/{{.ID}}" 
-                    hx-target="#alerts-list" 
+            <button hx-delete="/api/alerts/{{.ID}}"
+                    hx-target="#alerts-list"
                     hx-swap="innerHTML"
                     hx-confirm="Delete this alert?"
-                    class="p-2 text-content-muted hover:text-negative hover:bg-negative-bg/50 
+                    class="p-2 text-content-muted hover:text-negative hover:bg-negative-bg/50
                            rounded-lg transition-all duration-200"
                     aria-label="Delete alert">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

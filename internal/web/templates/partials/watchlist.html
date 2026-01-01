@@ -1,9 +1,9 @@
 {{if .Stocks}}
 <div class="space-y-3">
     {{range .Stocks}}
-    <article class="group flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl 
+    <article class="group flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl
                     border border-transparent hover:border-accent/30 hover:bg-bg-tertiary
-                    transition-all duration-200 cursor-pointer" 
+                    transition-all duration-200 cursor-pointer"
              data-symbol="{{.Symbol}}">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-bg-secondary flex items-center justify-center
@@ -43,7 +43,7 @@
     </div>
     <p class="text-content-secondary font-medium">No symbols tracked</p>
     <p class="text-sm text-content-muted mt-1">Add stocks to your watchlist to see them here</p>
-    <a href="/settings" 
+    <a href="/settings"
        class="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

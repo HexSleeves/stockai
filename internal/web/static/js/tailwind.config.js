@@ -43,7 +43,15 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: [
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
         mono: ['JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Consolas', 'monospace'],
       },
       animation: {
@@ -51,7 +59,7 @@ module.exports = {
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.2s ease-out',
         'pulse-subtle': 'pulseSubtle 2s infinite',
-        'ticker': 'ticker 0.3s ease-out',
+        ticker: 'ticker 0.3s ease-out',
       },
       keyframes: {
         fadeIn: {
