@@ -1,0 +1,171 @@
+package components
+
+import "stockmarket/internal/web/components/icons"
+
+// Input is a styled text input
+templ Input(id, name, placeholder, value string, required bool) {
+	<input
+		type="text"
+		id={ id }
+		name={ name }
+		value={ value }
+		placeholder={ placeholder }
+		if required {
+			required
+		}
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	/>
+}
+
+// InputPassword is a styled password input
+templ InputPassword(id, name, placeholder string) {
+	<input
+		type="password"
+		id={ id }
+		name={ name }
+		placeholder={ placeholder }
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	/>
+}
+
+// InputNumber is a styled number input
+templ InputNumber(id, name, placeholder string, step string, min string, required bool) {
+	<input
+		type="number"
+		id={ id }
+		name={ name }
+		placeholder={ placeholder }
+		step={ step }
+		min={ min }
+		if required {
+			required
+		}
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted font-mono focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	/>
+}
+
+// InputEmail is a styled email input
+templ InputEmail(id, name, placeholder, value string) {
+	<input
+		type="email"
+		id={ id }
+		name={ name }
+		value={ value }
+		placeholder={ placeholder }
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	/>
+}
+
+// InputTel is a styled telephone input
+templ InputTel(id, name, placeholder, value string) {
+	<input
+		type="tel"
+		id={ id }
+		name={ name }
+		value={ value }
+		placeholder={ placeholder }
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	/>
+}
+
+// InputWithConfigured shows a password input with "Configured" badge
+templ InputWithConfigured(id, name, placeholder string, isConfigured bool) {
+	<div class="relative">
+		<input
+			type="password"
+			id={ id }
+			name={ name }
+			placeholder={ placeholder }
+			class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+		/>
+		if isConfigured {
+			<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-xs text-positive">
+				@icons.CheckCircleSolid("w-4 h-4")
+				<span>Configured</span>
+			</div>
+		}
+	</div>
+}
+
+// SelectOption represents an option in a select
+type SelectOption struct {
+	Value    string
+	Label    string
+	Selected bool
+}
+
+// Select is a styled select dropdown
+templ Select(name string, options []SelectOption) {
+	<select
+		name={ name }
+		class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+	>
+		for _, opt := range options {
+			<option value={ opt.Value } selected?={ opt.Selected }>{ opt.Label }</option>
+		}
+	</select>
+}
+
+// Checkbox is a styled checkbox with label
+templ Checkbox(name, label string, checked bool) {
+	<label class="flex items-center gap-3 text-content-secondary cursor-pointer group">
+		<input
+			type="checkbox"
+			name={ name }
+			checked?={ checked }
+			class="w-5 h-5 rounded border-border bg-bg-primary text-accent focus:ring-accent focus:ring-offset-0"
+		/>
+		<span class="text-sm group-hover:text-content-primary transition-colors">{ label }</span>
+	</label>
+}
+
+// Label is a form label
+templ Label(forID, text string) {
+	<label for={ forID } class="block text-sm font-medium text-content-primary">{ text }</label>
+}
+
+// LabelOptional is a form label with "Optional" marker
+templ LabelOptional(forID, text string) {
+	<label for={ forID } class="block text-sm font-medium text-content-primary">
+		{ text } <span class="text-content-muted font-normal">(Optional)</span>
+	</label>
+}
+
+// FormHint shows help text below a form field
+templ FormHint(text string) {
+	<p class="text-xs text-content-muted">{ text }</p>
+}
+
+// FormGroup wraps a label and input together
+templ FormGroup() {
+	<div class="space-y-2">
+		{ children... }
+	</div>
+}
+
+// SubmitButton is a primary submit button with optional spinner
+templ SubmitButton(text, spinnerID string) {
+	<button
+		type="submit"
+		class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50"
+	>
+		{ text }
+		if spinnerID != "" {
+			@HtmxIndicator(spinnerID)
+		}
+	</button>
+}
+
+// SubmitButtonFull is a full-width submit button
+templ SubmitButtonFull(text, spinnerID string) {
+	<button
+		type="submit"
+		class="w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 focus:ring-offset-bg-primary active:scale-[0.98]"
+	>
+		{ children... }
+		<span>{ text }</span>
+		if spinnerID != "" {
+			@HtmxIndicator(spinnerID)
+		}
+	</button>
+}

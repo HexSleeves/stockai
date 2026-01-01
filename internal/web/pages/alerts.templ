@@ -1,0 +1,161 @@
+package pages
+
+import (
+	"fmt"
+	c "stockmarket/internal/web/components"
+	"stockmarket/internal/web/components/icons"
+)
+
+// Alert represents a price alert
+type Alert struct {
+	ID          int64
+	Symbol      string
+	Condition   string // "above" or "below"
+	TargetPrice float64
+	Triggered   bool
+}
+
+// AlertsPage renders the alerts management page
+templ AlertsPage() {
+	@c.Layout(c.PageData{Title: "Alerts", Page: "alerts"}) {
+		@c.PageHeader("Price Alerts", "Set up price alerts for your tracked stocks")
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+			<!-- Create Alert Form -->
+			<div class="bg-bg-elevated rounded-xl border border-border p-6">
+				<h2 class="text-lg font-semibold text-content-primary mb-6">Create Alert</h2>
+				<form hx-post="/api/alerts" hx-target="#alerts-list" hx-swap="innerHTML" hx-on::after-request="this.reset()" hx-indicator="#create-alert-spinner">
+					<div class="space-y-4">
+						@c.FormGroup() {
+							@c.Label("alert-symbol", "Symbol")
+							@c.Input("alert-symbol", "symbol", "e.g., AAPL", "", true)
+						}
+						<div class="grid grid-cols-2 gap-4">
+							@c.FormGroup() {
+								@c.Label("condition", "Condition")
+								@c.Select("condition", []c.SelectOption{
+									{Value: "above", Label: "Price Above", Selected: true},
+									{Value: "below", Label: "Price Below"},
+								})
+							}
+							@c.FormGroup() {
+								@c.Label("price", "Price")
+								@c.InputNumber("price", "target_price", "0.00", "0.01", "0", true)
+							}
+						</div>
+						@c.SubmitButtonFull("Create Alert", "create-alert-spinner") {
+							@icons.Bell("w-5 h-5")
+						}
+					</div>
+				</form>
+			</div>
+			<!-- Quick Add from Watchlist -->
+			<div class="bg-bg-elevated rounded-xl border border-border p-6">
+				<h2 class="text-lg font-semibold text-content-primary mb-2">Quick Add from Watchlist</h2>
+				<p class="text-sm text-content-muted mb-4">Select a symbol to pre-fill the form:</p>
+				<div id="watchlist-alerts" hx-get="/partials/watchlist-alert-buttons" hx-trigger="load" hx-swap="innerHTML">
+					@c.LoadingSpinner()
+				</div>
+			</div>
+		</div>
+		<!-- Active Alerts -->
+		@c.Card("Active Alerts") {
+			<div id="alerts-list" hx-get="/partials/alerts-list" hx-trigger="load" hx-swap="innerHTML">
+				@c.LoadingSpinner()
+			</div>
+		}
+	}
+}
+
+// AlertsListPartial renders the list of alerts
+templ AlertsListPartial(alerts []Alert) {
+	if len(alerts) > 0 {
+		<div class="space-y-3">
+			for _, alert := range alerts {
+				@AlertItem(alert)
+			}
+		</div>
+	} else {
+		@c.EmptyState(c.EmptyStateData{
+			Icon:    "bell",
+			Title:   "No active alerts",
+			Message: "Create an alert to get notified when prices change",
+		})
+	}
+}
+
+// AlertItem renders a single alert
+templ AlertItem(alert Alert) {
+	<article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl border border-border hover:border-accent/30 transition-all duration-200">
+		<div class="flex items-center gap-4">
+			<div class={ "w-10 h-10 rounded-lg flex items-center justify-center",
+				templ.KV("bg-positive-bg", alert.Condition == "above"),
+				templ.KV("bg-negative-bg", alert.Condition == "below") }>
+				if alert.Condition == "above" {
+					@icons.ArrowUp("w-5 h-5 text-positive")
+				} else {
+					@icons.ArrowDown("w-5 h-5 text-negative")
+				}
+			</div>
+			<div>
+				<h3 class="font-semibold text-content-primary">{ alert.Symbol }</h3>
+				<p class="text-sm text-content-muted">
+					Price { alert.Condition }
+					<span class="font-mono font-medium text-content-secondary">{ fmt.Sprintf("$%.2f", alert.TargetPrice) }</span>
+				</p>
+			</div>
+		</div>
+		<div class="flex items-center gap-4">
+			if alert.Triggered {
+				<span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-positive-bg text-positive border border-positive/20">
+					@icons.Check("w-3.5 h-3.5")
+					Triggered
+				</span>
+			} else {
+				<span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-bg-tertiary text-content-secondary border border-border">
+					<span class="w-1.5 h-1.5 rounded-full bg-content-muted animate-pulse-subtle"></span>
+					Active
+				</span>
+			}
+			<button
+				hx-delete={ fmt.Sprintf("/api/alerts/%d", alert.ID) }
+				hx-target="#alerts-list"
+				hx-swap="innerHTML"
+				hx-confirm="Delete this alert?"
+				class="p-2 text-content-muted hover:text-negative hover:bg-negative-bg/50 rounded-lg transition-all duration-200"
+				aria-label="Delete alert"
+			>
+				@icons.Trash("w-4 h-4")
+			</button>
+		</div>
+	</article>
+}
+
+// WatchlistAlertButtonsPartial renders buttons to quick-add alerts
+templ WatchlistAlertButtonsPartial(symbols []string) {
+	if len(symbols) > 0 {
+		<div class="flex flex-wrap gap-2">
+			for _, symbol := range symbols {
+				@alertSymbolButton(symbol)
+			}
+		</div>
+	} else {
+		<div class="text-center py-4">
+			<p class="text-sm text-content-muted">No tracked symbols.</p>
+			<a href="/settings" class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">Add some</a>
+		</div>
+	}
+}
+
+templ alertSymbolButton(symbol string) {
+	<button
+		type="button"
+		onclick={ setAlertSymbol(symbol) }
+		class="px-4 py-2 bg-bg-tertiary hover:bg-border text-content-primary font-medium rounded-lg text-sm border border-border hover:border-accent/30 transition-all duration-200"
+	>
+		{ symbol }
+	</button>
+}
+
+script setAlertSymbol(symbol string) {
+	document.getElementById('alert-symbol').value = symbol;
+}

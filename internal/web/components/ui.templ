@@ -1,0 +1,244 @@
+package components
+
+import (
+	"fmt"
+	"stockmarket/internal/web/components/icons"
+)
+
+// Card is a container component with optional header
+templ Card(title string) {
+	<div class="bg-bg-elevated rounded-xl border border-border overflow-hidden">
+		if title != "" {
+			<div class="p-6 border-b border-border">
+				<h2 class="text-lg font-semibold text-content-primary">{ title }</h2>
+			</div>
+		}
+		<div class="p-6">
+			{ children... }
+		</div>
+	</div>
+}
+
+// CardWithAction is a card with a header action link
+templ CardWithAction(title, actionText, actionHref string) {
+	<div class="bg-bg-elevated rounded-xl border border-border overflow-hidden">
+		<div class="flex items-center justify-between p-6 border-b border-border">
+			<h2 class="text-lg font-semibold text-content-primary">{ title }</h2>
+			<a href={ templ.SafeURL(actionHref) } class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">{ actionText }</a>
+		</div>
+		<div class="p-6">
+			{ children... }
+		</div>
+	</div>
+}
+
+// PageHeader displays a page title and description
+templ PageHeader(title, description string) {
+	<header class="mb-8">
+		<h1 class="text-3xl font-bold tracking-tight text-content-primary">{ title }</h1>
+		<p class="text-content-secondary mt-1">{ description }</p>
+	</header>
+}
+
+// StatCard displays a metric with icon and label
+type StatCardData struct {
+	Label    string
+	Value    string
+	Subtext  string
+	IconBg   string // e.g., "bg-bg-tertiary", "bg-positive-bg"
+	IconType string // "clock", "chart", "lightbulb", "bell"
+}
+
+templ StatCard(data StatCardData) {
+	<div class="p-6 bg-bg-elevated rounded-xl border border-border hover:border-accent/30 transition-colors duration-200">
+		<div class="flex items-center justify-between">
+			<h3 class="text-sm font-medium text-content-muted uppercase tracking-wider">{ data.Label }</h3>
+			<div class={ "p-2 rounded-lg", data.IconBg }>
+				@statCardIcon(data.IconType)
+			</div>
+		</div>
+		<p class="mt-4 text-3xl font-bold text-content-primary font-mono">{ data.Value }</p>
+		if data.Subtext != "" {
+			<p class="text-sm text-content-muted mt-1">{ data.Subtext }</p>
+		}
+	</div>
+}
+
+templ statCardIcon(iconType string) {
+	switch iconType {
+		case "clock":
+			@icons.Clock("w-5 h-5 text-content-secondary")
+		case "chart":
+			@icons.ChartBar("w-5 h-5 text-content-secondary")
+		case "lightbulb":
+			@icons.LightBulb("w-5 h-5 text-positive")
+		case "bell":
+			@icons.Bell("w-5 h-5 text-warning")
+		default:
+			@icons.ChartBar("w-5 h-5 text-content-secondary")
+	}
+}
+
+// ActionBadge displays a BUY/SELL/HOLD/WATCH badge
+templ ActionBadge(action string) {
+	switch action {
+		case "BUY":
+			<span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-positive-bg text-positive border border-positive/20">
+				<span class="w-1.5 h-1.5 rounded-full bg-positive animate-pulse-subtle"></span>
+				BUY
+			</span>
+		case "SELL":
+			<span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-negative-bg text-negative border border-negative/20">
+				<span class="w-1.5 h-1.5 rounded-full bg-negative animate-pulse-subtle"></span>
+				SELL
+			</span>
+		case "HOLD":
+			<span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-bg-tertiary text-content-secondary border border-border">
+				HOLD
+			</span>
+		default:
+			<span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-warning-bg text-warning border border-warning/20">
+				<span class="w-1.5 h-1.5 rounded-full bg-warning animate-pulse-subtle"></span>
+				WATCH
+			</span>
+	}
+}
+
+// ActionBadgeLarge is a larger version for result headers
+templ ActionBadgeLarge(action string) {
+	switch action {
+		case "BUY":
+			<span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-positive-bg text-positive border border-positive/20">
+				<span class="w-2 h-2 rounded-full bg-positive animate-pulse-subtle"></span>
+				BUY
+			</span>
+		case "SELL":
+			<span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-negative-bg text-negative border border-negative/20">
+				<span class="w-2 h-2 rounded-full bg-negative animate-pulse-subtle"></span>
+				SELL
+			</span>
+		case "HOLD":
+			<span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-bg-tertiary text-content-secondary border border-border">
+				HOLD
+			</span>
+		default:
+			<span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-warning-bg text-warning border border-warning/20">
+				<span class="w-2 h-2 rounded-full bg-warning animate-pulse-subtle"></span>
+				WATCH
+			</span>
+	}
+}
+
+// EmptyState displays a "no data" message with icon and optional CTA
+type EmptyStateData struct {
+	Icon       string // "clipboard", "chart", "lightbulb", "bell"
+	Title      string
+	Message    string
+	ActionText string
+	ActionHref string
+}
+
+templ EmptyState(data EmptyStateData) {
+	<div class="text-center py-12">
+		<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-bg-tertiary flex items-center justify-center">
+			@emptyStateIcon(data.Icon)
+		</div>
+		<p class="text-content-secondary font-medium">{ data.Title }</p>
+		<p class="text-sm text-content-muted mt-1">{ data.Message }</p>
+		if data.ActionText != "" && data.ActionHref != "" {
+			<a
+				href={ templ.SafeURL(data.ActionHref) }
+				class="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+			>
+				@icons.Plus("w-4 h-4")
+				{ data.ActionText }
+			</a>
+		}
+	</div>
+}
+
+templ emptyStateIcon(icon string) {
+	switch icon {
+		case "clipboard":
+			@icons.Clipboard("w-8 h-8 text-content-muted")
+		case "chart":
+			@icons.ChartBar("w-8 h-8 text-content-muted")
+		case "lightbulb":
+			@icons.LightBulb("w-8 h-8 text-content-muted")
+		case "bell":
+			@icons.Bell("w-8 h-8 text-content-muted")
+		default:
+			@icons.Clipboard("w-8 h-8 text-content-muted")
+	}
+}
+
+// LoadingSpinner shows a centered spinner
+templ LoadingSpinner() {
+	<div class="flex items-center justify-center py-8">
+		<div class="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent"></div>
+	</div>
+}
+
+// LoadingSpinnerSmall shows a smaller spinner
+templ LoadingSpinnerSmall() {
+	<div class="flex items-center justify-center py-4">
+		<div class="animate-spin rounded-full h-6 w-6 border-2 border-accent border-t-transparent"></div>
+	</div>
+}
+
+// HtmxIndicator shows a spinner inline during htmx requests
+templ HtmxIndicator(id string) {
+	<div id={ id } class="htmx-indicator">
+		@icons.Spinner("animate-spin h-4 w-4")
+	</div>
+}
+
+// Button styles
+templ ButtonPrimary(text string) {
+	<button
+		type="submit"
+		class="inline-flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 focus:ring-offset-bg-primary active:scale-[0.98]"
+	>
+		{ children... }
+		<span>{ text }</span>
+	</button>
+}
+
+// ChangePercent formats and colors a percentage change
+templ ChangePercent(pct float64) {
+	if pct >= 0 {
+		<span class="flex items-center gap-1 text-sm font-medium font-mono text-positive">
+			@icons.ChevronUp("w-3.5 h-3.5")
+			+{ fmt.Sprintf("%.2f", pct) }%
+		</span>
+	} else {
+		<span class="flex items-center gap-1 text-sm font-medium font-mono text-negative">
+			@icons.ChevronDown("w-3.5 h-3.5")
+			{ fmt.Sprintf("%.2f", pct) }%
+		</span>
+	}
+}
+
+// Price formats a price value
+templ Price(price float64, class string) {
+	<span class={ class }>{ fmt.Sprintf("$%.2f", price) }</span>
+}
+
+// Confidence formats a confidence percentage
+templ Confidence(conf float64) {
+	<span class="font-semibold font-mono text-accent">{ fmt.Sprintf("%.0f", conf*100) }%</span>
+}
+
+// SymbolAvatar shows a symbol's initials in a styled box
+templ SymbolAvatar(symbol string, size string) {
+	<div class={ "rounded-lg bg-bg-secondary flex items-center justify-center group-hover:bg-accent/10 transition-colors duration-200", size }>
+		<span class="font-semibold text-sm text-content-primary">{ symbol[:min(2, len(symbol))] }</span>
+	</div>
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}

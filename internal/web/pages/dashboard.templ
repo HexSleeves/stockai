@@ -1,0 +1,88 @@
+package pages
+
+import (
+	"fmt"
+	c "stockmarket/internal/web/components"
+)
+
+// DashboardData contains all data needed for the dashboard page
+type DashboardData struct {
+	MarketOpen     bool
+	TrackedSymbols []string
+	SignalsToday   int
+	ActiveAlerts   int
+}
+
+// Dashboard renders the main dashboard page
+templ Dashboard(data DashboardData) {
+	@c.Layout(c.PageData{Title: "Dashboard", Page: "dashboard"}) {
+		@c.PageHeader("Dashboard", "Real-time market overview and AI-powered insights")
+		<!-- Stats Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+			@MarketStatusCard(data.MarketOpen)
+			@c.StatCard(c.StatCardData{
+				Label:   "Tracked Symbols",
+				Value:   fmt.Sprintf("%d", len(data.TrackedSymbols)),
+				Subtext: "Active watchlist",
+				IconBg:  "bg-bg-tertiary",
+				IconType: "chart",
+			})
+			@c.StatCard(c.StatCardData{
+				Label:   "Today's Signals",
+				Value:   fmt.Sprintf("%d", data.SignalsToday),
+				Subtext: "New recommendations",
+				IconBg:  "bg-positive-bg",
+				IconType: "lightbulb",
+			})
+			@c.StatCard(c.StatCardData{
+				Label:   "Active Alerts",
+				Value:   fmt.Sprintf("%d", data.ActiveAlerts),
+				Subtext: "Price triggers",
+				IconBg:  "bg-warning-bg",
+				IconType: "bell",
+			})
+		</div>
+		<!-- Two Column Layout -->
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+			@c.CardWithAction("Watchlist", "Manage", "/settings") {
+				<div id="watchlist" hx-get="/partials/watchlist" hx-trigger="load, every 30s" hx-swap="innerHTML">
+					@c.LoadingSpinner()
+				</div>
+			}
+			@c.CardWithAction("Latest Recommendations", "View All", "/recommendations") {
+				<div id="latest-recommendations" hx-get="/partials/recommendations?limit=5" hx-trigger="load" hx-swap="innerHTML">
+					@c.LoadingSpinner()
+				</div>
+			}
+		</div>
+		<!-- Recent Analysis -->
+		@c.CardWithAction("Recent Analysis History", "View All", "/analysis") {
+			<div id="analysis-history" hx-get="/partials/analysis-history?limit=10" hx-trigger="load" hx-swap="innerHTML">
+				@c.LoadingSpinner()
+			</div>
+		}
+	}
+}
+
+// MarketStatusCard shows the market open/closed status
+templ MarketStatusCard(isOpen bool) {
+	<div class="p-6 bg-bg-elevated rounded-xl border border-border hover:border-accent/30 transition-colors duration-200">
+		<div class="flex items-center justify-between">
+			<h3 class="text-sm font-medium text-content-muted uppercase tracking-wider">Market Status</h3>
+			<div class="p-2 bg-bg-tertiary rounded-lg">
+				<svg class="w-5 h-5 text-content-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+				</svg>
+			</div>
+		</div>
+		<div class="mt-4 flex items-center gap-2">
+			if isOpen {
+				<span class="w-2.5 h-2.5 rounded-full bg-positive animate-pulse-subtle"></span>
+				<span class="text-2xl font-semibold text-content-primary">Open</span>
+			} else {
+				<span class="w-2.5 h-2.5 rounded-full bg-negative"></span>
+				<span class="text-2xl font-semibold text-content-primary">Closed</span>
+			}
+		</div>
+	</div>
+}

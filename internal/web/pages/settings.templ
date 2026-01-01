@@ -1,0 +1,254 @@
+package pages
+
+import (
+	c "stockmarket/internal/web/components"
+	"stockmarket/internal/web/components/icons"
+)
+
+// SettingsConfig holds the current configuration
+type SettingsConfig struct {
+	MarketDataProvider string
+	HasMarketAPIKey    bool
+	AIProvider         string
+	AIModel            string
+	HasAIAPIKey        bool
+	RiskTolerance      string
+	TradeFrequency     string
+	PollingInterval    int
+	TrackedSymbols     []string
+	EmailAddress       string
+	EmailEnabled       bool
+	DiscordWebhook     string
+	DiscordEnabled     bool
+	SMSPhone           string
+	SMSEnabled         bool
+}
+
+// SettingsPage renders the settings page
+templ SettingsPage(config SettingsConfig) {
+	@c.Layout(c.PageData{Title: "Settings", Page: "settings"}) {
+		@c.PageHeader("Settings", "Configure your API keys, preferences, and notifications")
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			@MarketDataSettings(config)
+			@AIProviderSettings(config)
+			@TradingStrategySettings(config)
+			@WatchlistSettings(config.TrackedSymbols)
+			@PollingSettings(config)
+		</div>
+		@NotificationSettings(config)
+	}
+}
+
+// MarketDataSettings renders the market data provider settings card
+templ MarketDataSettings(config SettingsConfig) {
+	<div class="bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-info-bg rounded-lg">
+				@icons.ChartBar("w-5 h-5 text-info")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">Market Data Provider</h2>
+		</div>
+		<form hx-post="/api/config/market" hx-swap="none" hx-indicator="#market-spinner">
+			<div class="space-y-4">
+				@c.FormGroup() {
+					@c.Label("market_data_provider", "Provider")
+					@c.Select("market_data_provider", []c.SelectOption{
+						{Value: "yahoo", Label: "Yahoo Finance (Free, No Key)", Selected: config.MarketDataProvider == "yahoo"},
+						{Value: "alphavantage", Label: "Alpha Vantage", Selected: config.MarketDataProvider == "alphavantage"},
+						{Value: "finnhub", Label: "Finnhub", Selected: config.MarketDataProvider == "finnhub"},
+					})
+				}
+				@c.FormGroup() {
+					@c.Label("market_data_api_key", "API Key")
+					@c.InputWithConfigured("market_data_api_key", "market_data_api_key", "Leave empty to keep existing key", config.HasMarketAPIKey)
+					@c.FormHint("Leave empty to keep existing key")
+				}
+				@c.SubmitButton("Save Market Settings", "market-spinner")
+			</div>
+		</form>
+	</div>
+}
+
+// AIProviderSettings renders the AI provider settings card
+templ AIProviderSettings(config SettingsConfig) {
+	<div class="bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-accent/10 rounded-lg">
+				@icons.Computer("w-5 h-5 text-accent")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">AI Provider</h2>
+		</div>
+		<form hx-post="/api/config/ai" hx-swap="none" hx-indicator="#ai-spinner">
+			<div class="space-y-4">
+				@c.FormGroup() {
+					@c.Label("ai_provider", "Provider")
+					@c.Select("ai_provider", []c.SelectOption{
+						{Value: "openai", Label: "OpenAI", Selected: config.AIProvider == "openai"},
+						{Value: "claude", Label: "Claude (Anthropic)", Selected: config.AIProvider == "claude"},
+						{Value: "gemini", Label: "Gemini (Google)", Selected: config.AIProvider == "gemini"},
+					})
+				}
+				@c.FormGroup() {
+					@c.Label("ai_model", "Model")
+					<input
+						type="text"
+						name="ai_model"
+						value={ config.AIModel }
+						placeholder="e.g., gpt-4o, claude-3-sonnet"
+						class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted font-mono text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+					/>
+				}
+				@c.FormGroup() {
+					@c.Label("ai_provider_api_key", "API Key")
+					@c.InputWithConfigured("ai_provider_api_key", "ai_provider_api_key", "Leave empty to keep existing key", config.HasAIAPIKey)
+					@c.FormHint("Leave empty to keep existing key")
+				}
+				@c.SubmitButton("Save AI Settings", "ai-spinner")
+			</div>
+		</form>
+	</div>
+}
+
+// TradingStrategySettings renders the trading strategy settings card
+templ TradingStrategySettings(config SettingsConfig) {
+	<div class="bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-positive-bg rounded-lg">
+				@icons.TrendingUp("w-5 h-5 text-positive")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">Trading Strategy</h2>
+		</div>
+		<form hx-post="/api/config/strategy" hx-swap="none" hx-indicator="#strategy-spinner">
+			<div class="space-y-4">
+				@c.FormGroup() {
+					@c.Label("risk_tolerance", "Risk Tolerance")
+					@c.Select("risk_tolerance", []c.SelectOption{
+						{Value: "conservative", Label: "Conservative - Capital preservation", Selected: config.RiskTolerance == "conservative"},
+						{Value: "moderate", Label: "Moderate - Balanced growth/risk", Selected: config.RiskTolerance == "moderate"},
+						{Value: "aggressive", Label: "Aggressive - Maximum growth", Selected: config.RiskTolerance == "aggressive"},
+					})
+				}
+				@c.FormGroup() {
+					@c.Label("trade_frequency", "Trade Frequency")
+					@c.Select("trade_frequency", []c.SelectOption{
+						{Value: "daily", Label: "Daily Trading", Selected: config.TradeFrequency == "daily"},
+						{Value: "weekly", Label: "Weekly Trading", Selected: config.TradeFrequency == "weekly"},
+						{Value: "swing", Label: "Swing Trading (2-6 weeks)", Selected: config.TradeFrequency == "swing"},
+					})
+				}
+				@c.SubmitButton("Save Strategy", "strategy-spinner")
+			</div>
+		</form>
+	</div>
+}
+
+// WatchlistSettings renders the watchlist management card
+templ WatchlistSettings(symbols []string) {
+	<div class="bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-warning-bg rounded-lg">
+				@icons.Clipboard("w-5 h-5 text-warning")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">Watchlist</h2>
+		</div>
+		<form hx-post="/api/config/watchlist" hx-swap="none" hx-indicator="#watchlist-spinner">
+			<div class="space-y-4">
+				@c.FormGroup() {
+					@c.Label("symbols", "Tracked Symbols")
+					<input
+						type="text"
+						name="symbols"
+						value={ joinSymbols(symbols) }
+						placeholder="AAPL, GOOGL, MSFT, NVDA"
+						class="w-full px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-content-primary placeholder:text-content-muted font-mono focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+					/>
+					@c.FormHint("Comma-separated list of stock symbols")
+				}
+				@c.SubmitButton("Save Watchlist", "watchlist-spinner")
+			</div>
+		</form>
+	</div>
+}
+
+func joinSymbols(symbols []string) string {
+	if len(symbols) == 0 {
+		return ""
+	}
+	result := symbols[0]
+	for i := 1; i < len(symbols); i++ {
+		result += ", " + symbols[i]
+	}
+	return result
+}
+
+// PollingSettings renders the polling configuration card
+templ PollingSettings(config SettingsConfig) {
+	<div class="bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-info-bg rounded-lg">
+				@icons.Refresh("w-5 h-5 text-info")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">Polling Configuration</h2>
+		</div>
+		<form hx-post="/api/config/polling" hx-swap="none" hx-indicator="#polling-spinner">
+			<div class="space-y-4">
+				@c.FormGroup() {
+					@c.Label("polling_interval", "Data Refresh Interval")
+					@c.Select("polling_interval", []c.SelectOption{
+						{Value: "30", Label: "30 seconds", Selected: config.PollingInterval == 30},
+						{Value: "60", Label: "1 minute", Selected: config.PollingInterval == 60},
+						{Value: "300", Label: "5 minutes", Selected: config.PollingInterval == 300},
+						{Value: "900", Label: "15 minutes", Selected: config.PollingInterval == 900},
+						{Value: "1800", Label: "30 minutes", Selected: config.PollingInterval == 1800},
+						{Value: "3600", Label: "1 hour", Selected: config.PollingInterval == 3600},
+					})
+					@c.FormHint("How often to fetch fresh market data")
+				}
+				@c.SubmitButton("Save Polling Settings", "polling-spinner")
+			</div>
+		</form>
+	</div>
+}
+
+// NotificationSettings renders the notification settings section
+templ NotificationSettings(config SettingsConfig) {
+	<div class="mt-6 bg-bg-elevated rounded-xl border border-border p-6">
+		<div class="flex items-center gap-3 mb-6">
+			<div class="p-2 bg-negative-bg rounded-lg">
+				@icons.Bell("w-5 h-5 text-negative")
+			</div>
+			<h2 class="text-lg font-semibold text-content-primary">Notifications</h2>
+		</div>
+		<form hx-post="/api/config/notifications" hx-swap="none" hx-indicator="#notif-spinner">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+				<!-- Email -->
+				<div class="space-y-4">
+					<h3 class="text-sm font-semibold text-content-primary uppercase tracking-wider">Email</h3>
+					<div class="space-y-3">
+						@c.InputEmail("email_address", "email_address", "your@email.com", config.EmailAddress)
+						@c.Checkbox("email_enabled", "Enable email notifications", config.EmailEnabled)
+					</div>
+				</div>
+				<!-- Discord -->
+				<div class="space-y-4">
+					<h3 class="text-sm font-semibold text-content-primary uppercase tracking-wider">Discord</h3>
+					<div class="space-y-3">
+						@c.Input("discord_webhook", "discord_webhook", "Webhook URL", config.DiscordWebhook, false)
+						@c.Checkbox("discord_enabled", "Enable Discord notifications", config.DiscordEnabled)
+					</div>
+				</div>
+				<!-- SMS -->
+				<div class="space-y-4">
+					<h3 class="text-sm font-semibold text-content-primary uppercase tracking-wider">SMS (Twilio)</h3>
+					<div class="space-y-3">
+						@c.InputTel("sms_phone", "sms_phone", "+1234567890", config.SMSPhone)
+						@c.Checkbox("sms_enabled", "Enable SMS notifications", config.SMSEnabled)
+					</div>
+				</div>
+			</div>
+			<div class="mt-6 pt-6 border-t border-border">
+				@c.SubmitButton("Save Notification Settings", "notif-spinner")
+			</div>
+		</form>
+	</div>
+}

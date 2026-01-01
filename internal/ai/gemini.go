@@ -56,7 +56,7 @@ func (g *Gemini) Analyze(ctx context.Context, req models.AnalysisRequest) (*mode
 			},
 		},
 		"generationConfig": map[string]interface{}{
-			"temperature": 0.3,
+			"temperature":     0.3,
 			"maxOutputTokens": 1000,
 		},
 	}

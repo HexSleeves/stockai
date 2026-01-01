@@ -1,3 +1,9 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
@@ -34,3 +40,4 @@ go.work.sum
 # bin
 bin/
 stockmarket.db*
+./server

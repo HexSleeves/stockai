@@ -1,11 +1,18 @@
-.PHONY: dev build test docker clean install gen-key install-dependencies prettier prettier-check restart logs logs-recent help
+.PHONY: dev build test docker clean install gen-key install-dependencies prettier prettier-check restart logs logs-recent help generate templ
 
 # Development
 dev:
 	go run ./cmd/server
 
+# Generate templ files
+generate:
+	~/go/bin/templ generate ./...
+
+templ:
+	~/go/bin/templ generate ./...
+
 # Build
-build:
+build: generate
 	go build -o bin/server ./cmd/server
 
 # Test
@@ -35,9 +42,11 @@ install-dependencies:
 
 # Frontend formatting (static assets only)
 format:
+	go fmt -w .
 	npx --yes prettier --write "internal/web/**/*.{js,css,html}"
 
 format-check:
+	go fmt -w .
 	npx --yes prettier --check "internal/web/**/*.{js,css,html}"
 
 # Generate encryption key
@@ -63,6 +72,7 @@ help:
 	@echo "Targets:"
 	@echo "  dev - Run the development server"
 	@echo "  build - Build the binary"
+	@echo "  generate - Generate templ files"
 	@echo "  test - Run the tests"
 	@echo "  docker - Build the Docker image"
 	@echo "  docker-up - Start the Docker container"
@@ -70,8 +80,8 @@ help:
 	@echo "  docker-logs - View the Docker container logs"
 	@echo "  clean - Remove the binary"
 	@echo "  install-dependencies - Install the dependencies"
-	@echo "  prettier - Format frontend static assets"
-	@echo "  prettier-check - Check frontend formatting"
+	@echo "  format - Format frontend static assets"
+	@echo "  format-check - Check frontend formatting"
 	@echo "  gen-key - Generate the encryption key"
 	@echo "  restart - Rebuild, restart service, and show status"
 	@echo "  logs - Follow service logs (real-time)"

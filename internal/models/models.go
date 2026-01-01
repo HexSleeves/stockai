@@ -4,26 +4,26 @@ import "time"
 
 // UserConfig holds all user configuration settings
 type UserConfig struct {
-	ID                    int64                  `json:"id"`
-	MarketDataProvider    string                 `json:"market_data_provider"`    // "alphavantage" | "yahoo" | "finnhub"
-	MarketDataAPIKey      string                 `json:"market_data_api_key"`     // encrypted at rest
-	AIProvider            string                 `json:"ai_provider"`             // "openai" | "claude" | "gemini"
-	AIProviderAPIKey      string                 `json:"ai_provider_api_key"`     // encrypted at rest
-	AIModel               string                 `json:"ai_model"`                // e.g., "gpt-4o", "claude-sonnet"
-	RiskTolerance         string                 `json:"risk_tolerance"`          // "conservative" | "moderate" | "aggressive"
-	TradeFrequency        string                 `json:"trade_frequency"`         // "daily" | "weekly" | "swing"
-	TrackedSymbols        []string               `json:"tracked_symbols"`         // e.g., ["AAPL", "GOOGL", "MSFT"]
-	PollingInterval       int                    `json:"polling_interval"`        // in seconds, default 30
-	NotificationChannels  []NotificationConfig   `json:"notification_channels"`
-	CreatedAt             time.Time              `json:"created_at"`
-	UpdatedAt             time.Time              `json:"updated_at"`
+	ID                   int64                `json:"id"`
+	MarketDataProvider   string               `json:"market_data_provider"` // "alphavantage" | "yahoo" | "finnhub"
+	MarketDataAPIKey     string               `json:"market_data_api_key"`  // encrypted at rest
+	AIProvider           string               `json:"ai_provider"`          // "openai" | "claude" | "gemini"
+	AIProviderAPIKey     string               `json:"ai_provider_api_key"`  // encrypted at rest
+	AIModel              string               `json:"ai_model"`             // e.g., "gpt-4o", "claude-sonnet"
+	RiskTolerance        string               `json:"risk_tolerance"`       // "conservative" | "moderate" | "aggressive"
+	TradeFrequency       string               `json:"trade_frequency"`      // "daily" | "weekly" | "swing"
+	TrackedSymbols       []string             `json:"tracked_symbols"`      // e.g., ["AAPL", "GOOGL", "MSFT"]
+	PollingInterval      int                  `json:"polling_interval"`     // in seconds, default 30
+	NotificationChannels []NotificationConfig `json:"notification_channels"`
+	CreatedAt            time.Time            `json:"created_at"`
+	UpdatedAt            time.Time            `json:"updated_at"`
 }
 
 // NotificationConfig holds notification channel settings
 type NotificationConfig struct {
 	ID      int64    `json:"id"`
-	Type    string   `json:"type"`    // "email" | "discord" | "sms"
-	Target  string   `json:"target"`  // email address, webhook URL, phone number
+	Type    string   `json:"type"`   // "email" | "discord" | "sms"
+	Target  string   `json:"target"` // email address, webhook URL, phone number
 	Enabled bool     `json:"enabled"`
 	Events  []string `json:"events"` // ["buy_signal", "sell_signal", "price_alert"]
 }
@@ -66,9 +66,9 @@ type AnalysisRequest struct {
 type AnalysisResponse struct {
 	ID           int64        `json:"id"`
 	Symbol       string       `json:"symbol"`
-	Action       string       `json:"action"` // "BUY" | "SELL" | "HOLD" | "WATCH"
+	Action       string       `json:"action"`     // "BUY" | "SELL" | "HOLD" | "WATCH"
 	Confidence   float64      `json:"confidence"` // 0.0 - 1.0
-	Reasoning    string       `json:"reasoning"` // AI explanation
+	Reasoning    string       `json:"reasoning"`  // AI explanation
 	PriceTargets PriceTargets `json:"price_targets"`
 	Risks        []string     `json:"risks"`
 	Timeframe    string       `json:"timeframe"`
@@ -94,13 +94,13 @@ type PriceAlert struct {
 
 // Notification represents a notification to be sent
 type Notification struct {
-	ID        int64     `json:"id"`
-	Type      string    `json:"type"` // "buy_signal", "sell_signal", "price_alert"
-	Title     string    `json:"title"`
-	Message   string    `json:"message"`
-	Symbol    string    `json:"symbol"`
-	SentAt    time.Time `json:"sent_at"`
-	Channels  []string  `json:"channels"` // which channels it was sent to
+	ID       int64     `json:"id"`
+	Type     string    `json:"type"` // "buy_signal", "sell_signal", "price_alert"
+	Title    string    `json:"title"`
+	Message  string    `json:"message"`
+	Symbol   string    `json:"symbol"`
+	SentAt   time.Time `json:"sent_at"`
+	Channels []string  `json:"channels"` // which channels it was sent to
 }
 
 // RiskProfile defines analysis behavior based on risk tolerance
@@ -112,8 +112,8 @@ type RiskProfile struct {
 
 // TradeFrequencyProfile defines analysis behavior based on trade frequency
 type TradeFrequencyProfile struct {
-	Name             string `json:"name"`
-	AnalysisWindow   string `json:"analysis_window"`
+	Name              string `json:"name"`
+	AnalysisWindow    string `json:"analysis_window"`
 	SignalSensitivity string `json:"signal_sensitivity"`
 }
 
@@ -139,18 +139,18 @@ var RiskProfiles = map[string]RiskProfile{
 // Trade frequency profiles
 var TradeFrequencyProfiles = map[string]TradeFrequencyProfile{
 	"daily": {
-		Name:             "Daily",
-		AnalysisWindow:   "Intraday + daily charts",
+		Name:              "Daily",
+		AnalysisWindow:    "Intraday + daily charts",
 		SignalSensitivity: "High sensitivity, short-term indicators (RSI, MACD, intraday patterns)",
 	},
 	"weekly": {
-		Name:             "Weekly",
-		AnalysisWindow:   "Daily + weekly trends",
+		Name:              "Weekly",
+		AnalysisWindow:    "Daily + weekly trends",
 		SignalSensitivity: "Medium sensitivity, trend confirmation required",
 	},
 	"swing": {
-		Name:             "Swing",
-		AnalysisWindow:   "Multi-week patterns",
+		Name:              "Swing",
+		AnalysisWindow:    "Multi-week patterns",
 		SignalSensitivity: "Low sensitivity, strong trend/reversal signals only",
 	},
 }
@@ -181,12 +181,12 @@ type Alert struct {
 
 // Analysis for HTMX templates
 type Analysis struct {
-	ID             int64           `json:"id"`
-	Symbol         string          `json:"symbol"`
-	Recommendation Recommendation  `json:"recommendation"`
-	MarketData     *Quote          `json:"market_data"`
-	AIProvider     string          `json:"ai_provider"`
-	CreatedAt      time.Time       `json:"created_at"`
+	ID             int64          `json:"id"`
+	Symbol         string         `json:"symbol"`
+	Recommendation Recommendation `json:"recommendation"`
+	MarketData     *Quote         `json:"market_data"`
+	AIProvider     string         `json:"ai_provider"`
+	CreatedAt      time.Time      `json:"created_at"`
 }
 
 // AppConfig for settings page

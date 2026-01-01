@@ -56,13 +56,13 @@ func (yf *YahooFinance) GetQuote(ctx context.Context, symbol string) (*models.Qu
 		Chart struct {
 			Result []struct {
 				Meta struct {
-					RegularMarketPrice     float64 `json:"regularMarketPrice"`
-					PreviousClose          float64 `json:"previousClose"`
-					RegularMarketTime      int64   `json:"regularMarketTime"`
-					RegularMarketDayHigh   float64 `json:"regularMarketDayHigh"`
-					RegularMarketDayLow    float64 `json:"regularMarketDayLow"`
-					RegularMarketVolume    int64   `json:"regularMarketVolume"`
-					RegularMarketOpen      float64 `json:"regularMarketOpen"`
+					RegularMarketPrice   float64 `json:"regularMarketPrice"`
+					PreviousClose        float64 `json:"previousClose"`
+					RegularMarketTime    int64   `json:"regularMarketTime"`
+					RegularMarketDayHigh float64 `json:"regularMarketDayHigh"`
+					RegularMarketDayLow  float64 `json:"regularMarketDayLow"`
+					RegularMarketVolume  int64   `json:"regularMarketVolume"`
+					RegularMarketOpen    float64 `json:"regularMarketOpen"`
 				} `json:"meta"`
 			} `json:"result"`
 			Error *struct {

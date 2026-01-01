@@ -52,7 +52,7 @@ func (o *OpenAI) Analyze(ctx context.Context, req models.AnalysisRequest) (*mode
 			{"role": "user", "content": prompt},
 		},
 		"temperature": 0.3,
-		"max_tokens": 1000,
+		"max_tokens":  1000,
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -107,7 +107,7 @@ func (o *OpenAI) Analyze(ctx context.Context, req models.AnalysisRequest) (*mode
 func parseAnalysisResponse(symbol string, content string) (*models.AnalysisResponse, error) {
 	// Try to extract JSON from the response
 	content = strings.TrimSpace(content)
-	
+
 	// Handle markdown code blocks
 	if strings.HasPrefix(content, "```json") {
 		content = strings.TrimPrefix(content, "```json")

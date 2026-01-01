@@ -12,10 +12,10 @@ import (
 
 // Config holds application configuration
 type Config struct {
-	Port            string
-	DatabasePath    string
-	EncryptionKey   []byte // 32 bytes for AES-256
-	Environment     string
+	Port          string
+	DatabasePath  string
+	EncryptionKey []byte // 32 bytes for AES-256
+	Environment   string
 }
 
 // Load loads configuration from environment variables

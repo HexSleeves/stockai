@@ -1,0 +1,208 @@
+package pages
+
+import (
+	"fmt"
+	"time"
+	c "stockmarket/internal/web/components"
+	"stockmarket/internal/web/components/icons"
+)
+
+// Stock represents a stock in the watchlist
+type Stock struct {
+	Symbol        string
+	Name          string
+	Price         float64
+	ChangePercent float64
+}
+
+// WatchlistPartial renders the watchlist items
+templ WatchlistPartial(stocks []Stock) {
+	if len(stocks) > 0 {
+		<div class="space-y-3">
+			for _, stock := range stocks {
+				@WatchlistItem(stock)
+			}
+		</div>
+	} else {
+		@c.EmptyState(c.EmptyStateData{
+			Icon:       "clipboard",
+			Title:      "No symbols tracked",
+			Message:    "Add stocks to your watchlist to see them here",
+			ActionText: "Add Symbols",
+			ActionHref: "/settings",
+		})
+	}
+}
+
+// WatchlistItem renders a single stock in the watchlist
+templ WatchlistItem(stock Stock) {
+	<article
+		class="group flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl border border-transparent hover:border-accent/30 hover:bg-bg-tertiary transition-all duration-200 cursor-pointer"
+		data-symbol={ stock.Symbol }
+	>
+		<div class="flex items-center gap-3">
+			@c.SymbolAvatar(stock.Symbol, "w-10 h-10")
+			<div>
+				<h3 class="font-medium text-content-primary">{ stock.Symbol }</h3>
+				<p class="text-sm text-content-muted">{ stock.Name }</p>
+			</div>
+		</div>
+		<div class="text-right">
+			<p class="stock-price text-lg font-semibold font-mono text-content-primary">{ fmt.Sprintf("$%.2f", stock.Price) }</p>
+			<p class={ "stock-change flex items-center justify-end gap-1 text-sm font-medium font-mono",
+				templ.KV("text-positive", stock.ChangePercent >= 0),
+				templ.KV("text-negative", stock.ChangePercent < 0) }>
+				if stock.ChangePercent >= 0 {
+					@icons.ChevronUp("w-3.5 h-3.5")
+					+{ fmt.Sprintf("%.2f", stock.ChangePercent) }%
+				} else {
+					@icons.ChevronDown("w-3.5 h-3.5")
+					{ fmt.Sprintf("%.2f", stock.ChangePercent) }%
+				}
+			</p>
+		</div>
+	</article>
+}
+
+// Recommendation represents a trading recommendation
+type Recommendation struct {
+	Symbol     string
+	Action     string // BUY, SELL, HOLD, WATCH
+	Confidence float64
+}
+
+// RecommendationsPartial renders the recommendations list
+templ RecommendationsPartial(recs []Recommendation) {
+	if len(recs) > 0 {
+		<div class="space-y-3">
+			for _, rec := range recs {
+				@RecommendationItem(rec)
+			}
+		</div>
+	} else {
+		@c.EmptyState(c.EmptyStateData{
+			Icon:       "lightbulb",
+			Title:      "No recommendations yet",
+			Message:    "Run an analysis to get AI-powered insights",
+			ActionText: "Run Analysis",
+			ActionHref: "/analysis",
+		})
+	}
+}
+
+// RecommendationItem renders a single recommendation
+templ RecommendationItem(rec Recommendation) {
+	<article class="flex items-center justify-between p-4 bg-bg-tertiary/50 rounded-xl border border-transparent hover:border-accent/30 hover:bg-bg-tertiary transition-all duration-200">
+		<div class="flex items-center gap-3">
+			@c.ActionBadge(rec.Action)
+			<span class="font-semibold text-content-primary">{ rec.Symbol }</span>
+		</div>
+		<div class="flex items-center gap-6">
+			<div class="text-right">
+				<p class="text-xs text-content-muted uppercase tracking-wider">Confidence</p>
+				@c.Confidence(rec.Confidence)
+			</div>
+			<a href={ templ.SafeURL("/analysis/" + rec.Symbol) } class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">
+				View
+			</a>
+		</div>
+	</article>
+}
+
+// Analysis represents a historical analysis record
+type Analysis struct {
+	ID             int64
+	Symbol         string
+	Recommendation Recommendation
+	AIProvider     string
+	CreatedAt      time.Time
+}
+
+// AnalysisHistoryPartial renders the analysis history table
+templ AnalysisHistoryPartial(analyses []Analysis) {
+	if len(analyses) > 0 {
+		<div class="overflow-hidden rounded-xl border border-border">
+			<table class="w-full">
+				<thead>
+					<tr class="bg-bg-secondary border-b border-border">
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Symbol</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Recommendation</th>
+						<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-content-muted">Confidence</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">AI Provider</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Date</th>
+						<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-content-muted"></th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-border">
+					for _, a := range analyses {
+						@AnalysisHistoryRow(a)
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		@c.EmptyState(c.EmptyStateData{
+			Icon:       "chart",
+			Title:      "No analysis history yet",
+			Message:    "Run your first stock analysis to get started",
+			ActionText: "Run your first analysis",
+			ActionHref: "/analysis",
+		})
+	}
+}
+
+// AnalysisHistoryRow renders a single row in the analysis history table
+templ AnalysisHistoryRow(a Analysis) {
+	<tr class="hover:bg-bg-secondary/50 transition-colors duration-150">
+		<td class="px-4 py-4">
+			<span class="font-semibold text-content-primary">{ a.Symbol }</span>
+		</td>
+		<td class="px-4 py-4">
+			@c.ActionBadge(a.Recommendation.Action)
+		</td>
+		<td class="px-4 py-4 text-right">
+			@c.Confidence(a.Recommendation.Confidence)
+		</td>
+		<td class="px-4 py-4">
+			<span class="text-sm text-content-muted">{ a.AIProvider }</span>
+		</td>
+		<td class="px-4 py-4">
+			<span class="text-sm text-content-muted">{ a.CreatedAt.Format("Jan 02, 15:04") }</span>
+		</td>
+		<td class="px-4 py-4 text-right">
+			<button
+				hx-get={ fmt.Sprintf("/partials/analysis-detail/%d", a.ID) }
+				hx-target="#analysis-result"
+				hx-swap="innerHTML"
+				class="text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+			>
+				View
+			</button>
+		</td>
+	</tr>
+}
+
+// QuickAnalyzePartial renders quick-analyze buttons
+templ QuickAnalyzePartial(symbols []string) {
+	if len(symbols) > 0 {
+		<div class="flex flex-wrap gap-2">
+			for _, symbol := range symbols {
+				<button
+					hx-post="/api/analyze"
+					hx-vals={ fmt.Sprintf(`{"symbol": "%s"}`, symbol) }
+					hx-target="#analysis-result"
+					hx-swap="innerHTML"
+					hx-indicator="#analyze-spinner"
+					class="px-4 py-2 bg-bg-tertiary hover:bg-border text-content-primary font-medium rounded-lg text-sm border border-border hover:border-accent/30 transition-all duration-200 active:scale-[0.98]"
+				>
+					{ symbol }
+				</button>
+			}
+		</div>
+	} else {
+		<div class="text-center py-4">
+			<p class="text-sm text-content-muted">No tracked symbols.</p>
+			<a href="/settings" class="text-sm font-medium text-accent hover:text-accent-hover transition-colors">Add some</a>
+		</div>
+	}
+}

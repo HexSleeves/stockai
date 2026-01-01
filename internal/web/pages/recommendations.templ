@@ -1,0 +1,91 @@
+package pages
+
+import (
+	"fmt"
+	"time"
+	c "stockmarket/internal/web/components"
+)
+
+// RecommendationDetail is a full recommendation with all details
+type RecommendationDetail struct {
+	ID          int64
+	Symbol      string
+	Action      string
+	Confidence  float64
+	TargetPrice float64
+	AIProvider  string
+	CreatedAt   time.Time
+}
+
+// RecommendationsPage renders the recommendations list page
+templ RecommendationsPage() {
+	@c.Layout(c.PageData{Title: "Recommendations", Page: "recommendations"}) {
+		@c.PageHeader("AI Recommendations", "View all AI-generated trading recommendations")
+		@c.Card("All Recommendations") {
+			<div id="recommendations-list" hx-get="/partials/recommendations-list" hx-trigger="load" hx-swap="innerHTML">
+				@c.LoadingSpinner()
+			</div>
+		}
+	}
+}
+
+// RecommendationsListPartial renders the full recommendations table
+templ RecommendationsListPartial(recs []RecommendationDetail) {
+	if len(recs) > 0 {
+		<div class="overflow-hidden rounded-xl border border-border">
+			<table class="w-full">
+				<thead>
+					<tr class="bg-bg-secondary border-b border-border">
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Symbol</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Action</th>
+						<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-content-muted">Confidence</th>
+						<th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-content-muted">Target Price</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">Date</th>
+						<th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-content-muted">AI Provider</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-border">
+					for _, rec := range recs {
+						@RecommendationRow(rec)
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		@c.EmptyState(c.EmptyStateData{
+			Icon:       "lightbulb",
+			Title:      "No recommendations yet",
+			Message:    "Run stock analyses to generate AI recommendations",
+			ActionText: "Run Analysis",
+			ActionHref: "/analysis",
+		})
+	}
+}
+
+// RecommendationRow renders a single recommendation row
+templ RecommendationRow(rec RecommendationDetail) {
+	<tr class="hover:bg-bg-secondary/50 transition-colors duration-150">
+		<td class="px-4 py-4">
+			<span class="font-semibold text-content-primary">{ rec.Symbol }</span>
+		</td>
+		<td class="px-4 py-4">
+			@c.ActionBadge(rec.Action)
+		</td>
+		<td class="px-4 py-4 text-right">
+			@c.Confidence(rec.Confidence)
+		</td>
+		<td class="px-4 py-4 text-right">
+			if rec.TargetPrice > 0 {
+				<span class="font-mono text-content-primary">{ fmt.Sprintf("$%.2f", rec.TargetPrice) }</span>
+			} else {
+				<span class="text-content-muted">-</span>
+			}
+		</td>
+		<td class="px-4 py-4">
+			<span class="text-sm text-content-muted">{ rec.CreatedAt.Format("Jan 02, 15:04") }</span>
+		</td>
+		<td class="px-4 py-4">
+			<span class="text-sm text-content-muted">{ rec.AIProvider }</span>
+		</td>
+	</tr>
+}

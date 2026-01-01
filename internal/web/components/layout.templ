@@ -1,0 +1,168 @@
+package components
+
+import "stockmarket/internal/web/components/icons"
+
+// PageData contains common page data
+type PageData struct {
+	Title string
+	Page  string
+}
+
+// Layout is the main page layout with sidebar navigation
+templ Layout(data PageData) {
+	<!DOCTYPE html>
+	<html lang="en" class="h-full">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ data.Title } - StockAI</title>
+			<!-- Fonts -->
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+			<!-- Theme initialization (prevent flash) -->
+			<script src="/static/js/theme.js"></script>
+			<!-- Tailwind CSS -->
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="/static/js/tailwind.config.js"></script>
+			<!-- Custom CSS -->
+			<link rel="stylesheet" href="/static/css/app.css"/>
+			<!-- HTMX -->
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+		</head>
+		<body class="h-full bg-bg-primary text-content-primary font-sans">
+			<a href="#main-content" class="skip-link">Skip to main content</a>
+			<div class="flex h-full">
+				@Sidebar(data.Page)
+				<main id="main-content" class="flex-1 ml-64 p-8 min-h-screen bg-bg-primary">
+					{ children... }
+				</main>
+			</div>
+			<div id="toast-container" class="fixed bottom-6 right-6 space-y-3 z-50"></div>
+			@layoutScripts()
+		</body>
+	</html>
+}
+
+// Sidebar navigation component
+templ Sidebar(currentPage string) {
+	<nav class="w-64 h-screen bg-bg-secondary border-r border-border flex flex-col fixed left-0 top-0">
+		<!-- Logo -->
+		<div class="p-6 border-b border-border">
+			<a href="/" class="flex items-center gap-3">
+				<div class="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/25">
+					@icons.TrendingUp("w-6 h-6 text-white")
+				</div>
+				<span class="text-xl font-bold text-content-primary">StockAI</span>
+			</a>
+		</div>
+		<!-- Navigation Items -->
+		<div class="flex-1 p-4 space-y-1 overflow-y-auto">
+			@NavItem("/", "dashboard", currentPage, "Dashboard") {
+				@icons.Home("w-5 h-5")
+			}
+			@NavItem("/analysis", "analysis", currentPage, "Analysis") {
+				@icons.ChartBar("w-5 h-5")
+			}
+			@NavItem("/recommendations", "recommendations", currentPage, "Recommendations") {
+				@icons.LightBulb("w-5 h-5")
+			}
+			@NavItem("/alerts", "alerts", currentPage, "Alerts") {
+				@icons.Bell("w-5 h-5")
+			}
+			@NavItem("/settings", "settings", currentPage, "Settings") {
+				@icons.Cog("w-5 h-5")
+			}
+		</div>
+		<!-- Theme Toggle -->
+		<div class="p-4 border-t border-border">
+			<button
+				id="theme-toggle"
+				onclick="toggleTheme()"
+				class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-content-secondary hover:bg-bg-tertiary hover:text-content-primary transition-all duration-200"
+				aria-label="Toggle dark mode"
+			>
+				@icons.Sun("hidden dark:block w-5 h-5")
+				@icons.Moon("block dark:hidden w-5 h-5")
+				<span class="dark:hidden">Dark Mode</span>
+				<span class="hidden dark:inline">Light Mode</span>
+			</button>
+		</div>
+	</nav>
+}
+
+// NavItem is a sidebar navigation link
+templ NavItem(href, page, currentPage, label string) {
+	<a
+		href={ templ.SafeURL(href) }
+		class={ "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200",
+			templ.KV("bg-accent/10 text-accent font-medium", page == currentPage),
+			templ.KV("text-content-secondary hover:bg-bg-tertiary hover:text-content-primary", page != currentPage) }
+	>
+		{ children... }
+		<span>{ label }</span>
+	</a>
+}
+
+// layoutScripts contains JavaScript for the layout
+templ layoutScripts() {
+	<script>
+		function toggleTheme() {
+			document.documentElement.classList.toggle('dark');
+			localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+		}
+
+		document.body.addEventListener('htmx:wsAfterMessage', function(event) {
+			try {
+				const data = JSON.parse(event.detail.message);
+				if (data.type === 'quote') updateQuote(data.data);
+			} catch(e) {}
+		});
+
+		function updateQuote(quote) {
+			const el = document.querySelector(`[data-symbol="${quote.symbol}"]`);
+			if (el) {
+				const priceEl = el.querySelector('.stock-price');
+				const changeEl = el.querySelector('.stock-change');
+				if (priceEl) {
+					const oldPrice = parseFloat(priceEl.textContent.replace('$', ''));
+					priceEl.textContent = '$' + quote.price.toFixed(2);
+					priceEl.classList.remove('price-up', 'price-down');
+					if (quote.price > oldPrice) priceEl.classList.add('price-up');
+					else if (quote.price < oldPrice) priceEl.classList.add('price-down');
+				}
+				if (changeEl) {
+					const pct = quote.change_percent.toFixed(2);
+					changeEl.textContent = (quote.change_percent >= 0 ? '+' : '') + pct + '%';
+					changeEl.className = 'stock-change text-sm font-medium font-mono ' + (quote.change_percent >= 0 ? 'text-positive' : 'text-negative');
+				}
+			}
+		}
+
+		function showToast(message, type = 'info') {
+			const container = document.getElementById('toast-container');
+			const icons = {
+				success: '<svg class="w-5 h-5 text-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
+				error: '<svg class="w-5 h-5 text-negative" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>',
+				info: '<svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+				warning: '<svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>'
+			};
+			const borderColors = { success: 'border-positive/30', error: 'border-negative/30', info: 'border-info/30', warning: 'border-warning/30' };
+			const toast = document.createElement('div');
+			toast.className = `flex items-start gap-3 p-4 bg-bg-elevated border ${borderColors[type] || borderColors.info} rounded-xl shadow-xl max-w-sm animate-slide-up`;
+			toast.innerHTML = `<div class="flex-shrink-0">${icons[type] || icons.info}</div><p class="flex-1 text-sm text-content-primary">${message}</p><button onclick="this.parentElement.remove()" class="flex-shrink-0 text-content-muted hover:text-content-primary transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
+			container.appendChild(toast);
+			setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 4000);
+		}
+
+		document.body.addEventListener('htmx:afterSwap', function(event) {
+			const trigger = event.detail.xhr.getResponseHeader('HX-Trigger');
+			if (trigger) {
+				try {
+					const data = JSON.parse(trigger);
+					if (data.showToast) showToast(data.showToast.message, data.showToast.type);
+				} catch(e) {}
+			}
+		});
+	</script>
+}

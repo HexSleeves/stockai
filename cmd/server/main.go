@@ -27,11 +27,8 @@ func main() {
 	}
 	defer database.Close()
 
-	// Create template renderer
-	templates, err := web.NewTemplates(database)
-	if err != nil {
-		log.Fatalf("Failed to load templates: %v", err)
-	}
+	// Create templ handlers (new type-safe components)
+	templHandlers := web.NewTemplHandlers(database)
 
 	// Create API server
 	apiServer := api.NewServer(database, cfg)
@@ -42,23 +39,27 @@ func main() {
 	// API routes
 	apiServer.SetupRoutes(mux)
 
-	// Page routes (Go templates + HTMX)
-	mux.HandleFunc("/", templates.Dashboard)
-	mux.HandleFunc("/analysis", templates.Analysis)
-	mux.HandleFunc("/analysis/", templates.Analysis)
-	mux.HandleFunc("/recommendations", templates.Recommendations)
-	mux.HandleFunc("/alerts", templates.Alerts)
-	mux.HandleFunc("/settings", templates.Settings)
+	// Static files
+	staticFS := http.FileServer(http.Dir("internal/web/static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", staticFS))
+
+	// Page routes (templ components + HTMX)
+	mux.HandleFunc("/", templHandlers.Dashboard)
+	mux.HandleFunc("/analysis", templHandlers.Analysis)
+	mux.HandleFunc("/analysis/", templHandlers.Analysis)
+	mux.HandleFunc("/recommendations", templHandlers.Recommendations)
+	mux.HandleFunc("/alerts", templHandlers.Alerts)
+	mux.HandleFunc("/settings", templHandlers.Settings)
 
 	// Partial routes for HTMX
-	mux.HandleFunc("/partials/watchlist", templates.PartialWatchlist)
-	mux.HandleFunc("/partials/recommendations", templates.PartialRecommendations)
-	mux.HandleFunc("/partials/recommendations-list", templates.PartialRecommendationsList)
-	mux.HandleFunc("/partials/analysis-history", templates.PartialAnalysisHistory)
-	mux.HandleFunc("/partials/analysis-detail/", templates.PartialAnalysisDetail)
-	mux.HandleFunc("/partials/alerts-list", templates.PartialAlertsList)
-	mux.HandleFunc("/partials/quick-analyze", templates.PartialQuickAnalyze)
-	mux.HandleFunc("/partials/watchlist-alert-buttons", templates.PartialWatchlistAlertButtons)
+	mux.HandleFunc("/partials/watchlist", templHandlers.PartialWatchlist)
+	mux.HandleFunc("/partials/recommendations", templHandlers.PartialRecommendations)
+	mux.HandleFunc("/partials/recommendations-list", templHandlers.PartialRecommendationsList)
+	mux.HandleFunc("/partials/analysis-history", templHandlers.PartialAnalysisHistory)
+	mux.HandleFunc("/partials/analysis-detail/", templHandlers.PartialAnalysisDetail)
+	mux.HandleFunc("/partials/alerts-list", templHandlers.PartialAlertsList)
+	mux.HandleFunc("/partials/quick-analyze", templHandlers.PartialQuickAnalyze)
+	mux.HandleFunc("/partials/watchlist-alert-buttons", templHandlers.PartialWatchlistAlertButtons)
 
 	// Add CORS middleware
 	handler := corsMiddleware(mux)
