@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Generated / build outputs
+bin/
+
+# Go build/test artifacts
+*.exe
+*.test
+
+# Local DB files
+*.db
+*.db-*
+
+# Go HTML templates (contain Go template syntax; avoid accidental rewrites)
+internal/web/templates/**/*.html
+
