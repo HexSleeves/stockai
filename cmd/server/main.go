@@ -38,7 +38,7 @@ func main() {
 
 	// Setup routes
 	mux := http.NewServeMux()
-	
+
 	// API routes
 	apiServer.SetupRoutes(mux)
 
