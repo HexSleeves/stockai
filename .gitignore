@@ -34,3 +34,6 @@ go.work.sum
 # bin
 bin/
 stockmarket.db*
+
+# Generated templ files
+*_templ.go
