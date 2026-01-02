@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +33,10 @@ func main() {
 
 	// Create API server
 	apiServer := api.NewServer(database, cfg)
+
+	// Start background polling service for alerts
+	pollingCtx, pollingCancel := context.WithCancel(context.Background())
+	apiServer.StartPollingService(pollingCtx)
 
 	// Setup routes
 	mux := http.NewServeMux()
@@ -77,6 +82,7 @@ func main() {
 		<-sigChan
 
 		log.Println("Shutting down server...")
+		pollingCancel() // Stop polling service
 		httpServer.Close()
 	}()
 

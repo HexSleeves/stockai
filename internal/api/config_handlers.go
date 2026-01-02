@@ -269,11 +269,11 @@ func (s *Server) handleConfigPolling(w http.ResponseWriter, r *http.Request) {
 	cfg.PollingInterval = interval
 
 	if err := s.db.UpdateConfig(cfg); err != nil {
-		http.Error(w, "Failed to update config", http.StatusInternalServerError)
+		htmxError(w, "Failed to update config")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	htmxSuccess(w, "Polling interval updated successfully")
 }
 
 // handleConfigNotifications handles notification settings updates

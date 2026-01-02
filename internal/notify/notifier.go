@@ -2,6 +2,7 @@ package notify
 
 import (
 	"errors"
+	"log"
 
 	"stockmarket/internal/models"
 )
@@ -50,8 +51,11 @@ func (s *Service) RegisterNotifier(n Notifier) {
 func (s *Service) SendToChannels(notification models.Notification, channels []models.NotificationConfig) []error {
 	var errs []error
 
+	log.Printf("[NOTIFY] Sending notification type=%s to %d channels", notification.Type, len(channels))
+
 	for _, ch := range channels {
 		if !ch.Enabled {
+			log.Printf("[NOTIFY] Skipping disabled channel: %s", ch.Type)
 			continue
 		}
 
@@ -64,17 +68,23 @@ func (s *Service) SendToChannels(notification models.Notification, channels []mo
 			}
 		}
 		if !eventMatch {
+			log.Printf("[NOTIFY] Channel %s doesn't handle event %s (events: %v)", ch.Type, notification.Type, ch.Events)
 			continue
 		}
 
 		notifier, ok := s.notifiers[ch.Type]
 		if !ok {
+			log.Printf("[NOTIFY] No notifier registered for type: %s", ch.Type)
 			errs = append(errs, errors.New("no notifier for type: "+ch.Type))
 			continue
 		}
 
+		log.Printf("[NOTIFY] Sending %s notification to %s", ch.Type, ch.Target)
 		if err := notifier.Send(notification, ch.Target); err != nil {
+			log.Printf("[NOTIFY] Failed to send %s notification: %v", ch.Type, err)
 			errs = append(errs, err)
+		} else {
+			log.Printf("[NOTIFY] Successfully sent %s notification", ch.Type)
 		}
 	}
 

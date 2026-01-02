@@ -74,8 +74,14 @@ templ Sidebar(currentPage string) {
 				@icons.Cog("w-5 h-5")
 			}
 		</div>
-		<!-- Theme Toggle -->
-		<div class="p-4 border-t border-border">
+		<!-- Status & Theme -->
+		<div class="p-4 border-t border-border space-y-2">
+			<!-- Connection Status -->
+			<div class="flex items-center gap-3 px-4 py-2 text-sm text-content-muted">
+				<span id="ws-status" class="w-2 h-2 rounded-full bg-negative" title="Connecting..."></span>
+				<span>Real-time updates</span>
+			</div>
+			<!-- Theme Toggle -->
 			<button
 				id="theme-toggle"
 				onclick="toggleTheme()"
@@ -112,35 +118,130 @@ templ layoutScripts() {
 			localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 		}
 
-		document.body.addEventListener('htmx:wsAfterMessage', function(event) {
+		// WebSocket connection for real-time updates
+		let ws = null;
+		let wsReconnectTimer = null;
+		let wsReconnectAttempts = 0;
+		const wsMaxReconnectAttempts = 10;
+		const wsReconnectDelay = 3000;
+
+		function connectWebSocket() {
+			if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+				return;
+			}
+
+			// Build WebSocket URL based on current location
+			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+			const wsUrl = `${protocol}//${window.location.host}/api/ws`;
+			
+			console.log('Connecting to WebSocket:', wsUrl);
+			
 			try {
-				const data = JSON.parse(event.detail.message);
-				if (data.type === 'quote') updateQuote(data.data);
-			} catch(e) {}
-		});
+				ws = new WebSocket(wsUrl);
+			} catch (e) {
+				console.error('WebSocket creation failed:', e);
+				scheduleReconnect();
+				return;
+			}
+
+			ws.onopen = function() {
+				console.log('WebSocket connected');
+				wsReconnectAttempts = 0;
+				updateConnectionStatus(true);
+			};
+
+			ws.onmessage = function(event) {
+				try {
+					const data = JSON.parse(event.data);
+					handleWebSocketMessage(data);
+				} catch(e) {
+					console.error('WebSocket message parse error:', e);
+				}
+			};
+
+			ws.onclose = function(event) {
+				console.log('WebSocket closed:', event.code, event.reason);
+				updateConnectionStatus(false);
+				scheduleReconnect();
+			};
+
+			ws.onerror = function(error) {
+				console.error('WebSocket error:', error);
+				updateConnectionStatus(false);
+			};
+		}
+
+		function scheduleReconnect() {
+			if (wsReconnectTimer) return;
+			if (wsReconnectAttempts >= wsMaxReconnectAttempts) {
+				console.log('Max reconnect attempts reached');
+				return;
+			}
+			wsReconnectAttempts++;
+			console.log(`Scheduling reconnect attempt ${wsReconnectAttempts}/${wsMaxReconnectAttempts}`);
+			wsReconnectTimer = setTimeout(() => {
+				wsReconnectTimer = null;
+				connectWebSocket();
+			}, wsReconnectDelay);
+		}
+
+		function updateConnectionStatus(connected) {
+			const indicator = document.getElementById('ws-status');
+			if (indicator) {
+				indicator.className = connected 
+					? 'w-2 h-2 rounded-full bg-positive animate-pulse-subtle'
+					: 'w-2 h-2 rounded-full bg-negative';
+				indicator.title = connected ? 'Real-time updates connected' : 'Disconnected - reconnecting...';
+			}
+		}
+
+		function handleWebSocketMessage(data) {
+			switch(data.type) {
+				case 'quote':
+					updateQuote(data.quote);
+					break;
+				case 'alert':
+					showToast(data.message, 'warning');
+					// Refresh alerts list if on alerts page
+					const alertsList = document.getElementById('alerts-list');
+					if (alertsList) {
+						htmx.trigger(alertsList, 'load');
+					}
+					break;
+				case 'info':
+					console.log('WS Info:', data.message);
+					break;
+				case 'error':
+					console.error('WS Error:', data.message);
+					showToast(data.message, 'error');
+					break;
+			}
+		}
 
 		function updateQuote(quote) {
-			const el = document.querySelector(`[data-symbol="${quote.symbol}"]`);
+			if (!quote || !quote.Symbol) return;
+			const el = document.querySelector(`[data-symbol="${quote.Symbol}"]`);
 			if (el) {
 				const priceEl = el.querySelector('.stock-price');
 				const changeEl = el.querySelector('.stock-change');
 				if (priceEl) {
 					const oldPrice = parseFloat(priceEl.textContent.replace('$', ''));
-					priceEl.textContent = '$' + quote.price.toFixed(2);
+					priceEl.textContent = '$' + quote.Price.toFixed(2);
 					priceEl.classList.remove('price-up', 'price-down');
-					if (quote.price > oldPrice) priceEl.classList.add('price-up');
-					else if (quote.price < oldPrice) priceEl.classList.add('price-down');
+					if (quote.Price > oldPrice) priceEl.classList.add('price-up');
+					else if (quote.Price < oldPrice) priceEl.classList.add('price-down');
 				}
 				if (changeEl) {
-					const pct = quote.change_percent.toFixed(2);
-					changeEl.textContent = (quote.change_percent >= 0 ? '+' : '') + pct + '%';
-					changeEl.className = 'stock-change text-sm font-medium font-mono ' + (quote.change_percent >= 0 ? 'text-positive' : 'text-negative');
+					const pct = quote.ChangePercent.toFixed(2);
+					changeEl.innerHTML = (quote.ChangePercent >= 0 ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>+' : '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>') + pct + '%';
+					changeEl.className = 'stock-change flex items-center justify-end gap-1 text-sm font-medium font-mono ' + (quote.ChangePercent >= 0 ? 'text-positive' : 'text-negative');
 				}
 			}
 		}
 
 		function showToast(message, type = 'info') {
 			const container = document.getElementById('toast-container');
+			if (!container) return;
 			const icons = {
 				success: '<svg class="w-5 h-5 text-positive" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
 				error: '<svg class="w-5 h-5 text-negative" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>',
@@ -152,7 +253,7 @@ templ layoutScripts() {
 			toast.className = `flex items-start gap-3 p-4 bg-bg-elevated border ${borderColors[type] || borderColors.info} rounded-xl shadow-xl max-w-sm animate-slide-up`;
 			toast.innerHTML = `<div class="flex-shrink-0">${icons[type] || icons.info}</div><p class="flex-1 text-sm text-content-primary">${message}</p><button onclick="this.parentElement.remove()" class="flex-shrink-0 text-content-muted hover:text-content-primary transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>`;
 			container.appendChild(toast);
-			setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 4000);
+			setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 5000);
 		}
 
 		document.body.addEventListener('htmx:afterSwap', function(event) {
@@ -162,6 +263,21 @@ templ layoutScripts() {
 					const data = JSON.parse(trigger);
 					if (data.showToast) showToast(data.showToast.message, data.showToast.type);
 				} catch(e) {}
+			}
+		});
+
+		// Connect WebSocket when page loads
+		document.addEventListener('DOMContentLoaded', function() {
+			connectWebSocket();
+		});
+
+		// Reconnect on visibility change (user returns to tab)
+		document.addEventListener('visibilitychange', function() {
+			if (document.visibilityState === 'visible') {
+				if (!ws || ws.readyState !== WebSocket.OPEN) {
+					wsReconnectAttempts = 0;
+					connectWebSocket();
+				}
 			}
 		});
 	</script>

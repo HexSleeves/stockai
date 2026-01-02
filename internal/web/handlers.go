@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"stockmarket/internal/db"
+	"stockmarket/internal/market"
 	"stockmarket/internal/web/pages"
 
 	"github.com/scmhub/calendar"
@@ -121,14 +122,28 @@ func (h *TemplHandlers) PartialWatchlist(w http.ResponseWriter, r *http.Request)
 	config, _ := h.db.GetConfig()
 
 	var stocks []pages.Stock
-	if config != nil {
+	if config != nil && len(config.TrackedSymbols) > 0 {
+		// Get real market data using Yahoo provider (free, no API key needed)
+		provider := market.NewYahooFinance()
+
 		for _, sym := range config.TrackedSymbols {
-			stocks = append(stocks, pages.Stock{
-				Symbol:        sym,
-				Name:          sym + " Inc.",
-				Price:         150.00,
-				ChangePercent: 1.25,
-			})
+			stock := pages.Stock{
+				Symbol: sym,
+				Name:   sym + " Inc.",
+			}
+
+			// Fetch real quote
+			quote, err := provider.GetQuote(r.Context(), sym)
+			if err == nil && quote != nil {
+				stock.Price = quote.Price
+				stock.ChangePercent = quote.ChangePercent
+			} else {
+				// Fallback to placeholder if quote fails
+				stock.Price = 0
+				stock.ChangePercent = 0
+			}
+
+			stocks = append(stocks, stock)
 		}
 	}
 

@@ -30,8 +30,10 @@ func (d *DiscordNotifier) Type() string {
 // Send sends a Discord webhook notification
 func (d *DiscordNotifier) Send(notification models.Notification, target string) error {
 	if target == "" {
+		fmt.Println("[DISCORD] No webhook URL provided, skipping")
 		return nil
 	}
+	fmt.Printf("[DISCORD] Sending to webhook: %s...\n", target[:50])
 
 	// Choose color based on notification type
 	color := 0x808080 // gray
